@@ -3,12 +3,32 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+
 using Microsoft.VisualBasic.FileIO;
 
 namespace DirectoryTools
 {
-	public partial class Form1 : Form
+	public partial class EmptyFoldersUserControl : UserControl
 	{
+		private string _FolderPath;
+
+		public EmptyFoldersUserControl()
+		{
+			InitializeComponent();
+		}
+
+		public void SetContexctMenu(ContextMenuStrip listboxContextMenu)
+		{
+			_EmptyFoldersListBox.ContextMenuStrip = listboxContextMenu;
+		}
+
+		public void SetFolder(string folderPath)
+		{
+			_FolderPath = folderPath;
+			_EmptyFoldersListBox.Items.Clear();
+			FillEmptyFolderList();
+		}
+
 		private void _EmptyFoldersDeleteButton_Click(object sender, EventArgs e)
 		{
 			// go backwards so we can remove the deleted items from the list with the same loop
@@ -21,19 +41,19 @@ namespace DirectoryTools
 					{
 						string folder = _EmptyFoldersListBox.Items[i].ToString();
 						FileSystem.DeleteDirectory(folder, UIOption.OnlyErrorDialogs,
-															_EmptyFoldersDeleteToRecycleBin.Checked ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
-															UICancelOption.ThrowException);
+													_EmptyFoldersDeleteToRecycleBin.Checked ? RecycleOption.SendToRecycleBin : RecycleOption.DeletePermanently,
+													UICancelOption.ThrowException);
 						_EmptyFoldersListBox.Items.RemoveAt(i);
 					}
 					catch (Exception ex)
 					{
 						MessageBox.Show(ex.Message);
-						UpdateEmptyFoldersUI();
+						UpdateUI();
 						return;
 					}
 				}
 			}
-			UpdateEmptyFoldersUI();
+			UpdateUI();
 		}
 
 		private void _EmptyFoldersInvertSelection_Click(object sender, EventArgs e)
@@ -43,13 +63,13 @@ namespace DirectoryTools
 				_EmptyFoldersListBox.SetItemChecked(i, !_EmptyFoldersListBox.GetItemChecked(i));
 			}
 
-			UpdateEmptyFoldersUI();
+			UpdateUI();
 		}
 
 		private void _EmptyFoldersListBox_ItemCheck(object sender, ItemCheckEventArgs e)
 		{
-			// since this event is triggered befor ethe ui is updated, we want to delay things a little bit.
-			this.BeginInvoke((MethodInvoker)(() => UpdateEmptyFoldersUI()));
+			// since this event is triggered before the ui is updated, we want to delay things a little bit.
+			this.BeginInvoke((MethodInvoker)(() => UpdateUI()));
 		}
 
 		private void _EmptyFoldersSelectAll_Click(object sender, EventArgs e)
@@ -60,20 +80,20 @@ namespace DirectoryTools
 				_EmptyFoldersListBox.SetItemChecked(i, newState);
 			}
 
-			UpdateEmptyFoldersUI();
+			UpdateUI();
 		}
 
-		private void FindFolders()
+
+		private void FillEmptyFolderList()
 		{
-			_EmptyFoldersListBox.Items.Clear();
-			List<string> paths = DirectoryUtils.GetEmptyFolders(_FolderPath.Text);
+			List<string> paths = GetEmptyFolders(_FolderPath);
 			if (paths.Any())
 			{
 				foreach (string path in paths)
 				{
 					_EmptyFoldersListBox.Items.Add(path);
 				}
-				UpdateEmptyFoldersUI();
+				UpdateUI();
 			}
 			else
 			{
@@ -81,9 +101,38 @@ namespace DirectoryTools
 			}
 		}
 
-		private void UpdateEmptyFoldersUI()
+		public static List<string> GetEmptyFolders(string rootPath)
 		{
-			bool startingDirectoryExists = Directory.Exists(_FolderPath.Text);
+			List<string> paths = new List<string>();
+			DirSearch(rootPath, paths);
+			return paths;
+		}
+
+		public static List<string> DirSearch(string startingDir, List<string> paths)
+		{
+			try
+			{
+				foreach (string directory in Directory.GetDirectories(startingDir))
+				{
+					if (!Directory.GetDirectories(directory).Any() && !Directory.EnumerateFiles(directory).Any())
+					{
+						paths.Add(directory);
+					}
+
+					DirSearch(directory, paths);
+				}
+			}
+
+			catch (Exception ex)
+			{
+				Console.WriteLine(ex.Message);
+			}
+			return paths;
+		}
+
+		public void UpdateUI()
+		{
+			bool startingDirectoryExists = Directory.Exists(_FolderPath);
 			_EmptyFoldersDeleteButton.Enabled = startingDirectoryExists;
 			_EmptyFoldersListBox.Enabled = startingDirectoryExists;
 			_EmptyFoldersInvertSelection.Enabled = startingDirectoryExists && _EmptyFoldersListBox.Items.Count > 0;
@@ -95,5 +144,11 @@ namespace DirectoryTools
 			else
 				_EmptyFoldersSelectAll.Text = "UnSelect All";
 		}
+
+		private void _EmptyFoldersListBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			Common.ListBox_MouseDownHandler(sender, e);
+		}
 	}
 }
+

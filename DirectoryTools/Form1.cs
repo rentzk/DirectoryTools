@@ -6,10 +6,41 @@ namespace DirectoryTools
 {
 	public partial class Form1 : Form
 	{
+		private ContextMenuStrip listboxContextMenu;
 		public Form1()
 		{
 			InitializeComponent();
-			UpdateEmptyFoldersUI();
+
+			listboxContextMenu = new ContextMenuStrip();
+
+			_EmptyFoldersUserControl.SetContexctMenu(listboxContextMenu);
+			_EmptyFoldersUserControl.UpdateUI();
+
+			_MoveUpUserControl.SetContexctMenu(listboxContextMenu);
+			_MoveUpUserControl.UpdateUI();
+		}
+
+		private void FindAppropriateFolders()
+		{
+			_TabControl.Enabled = false;
+			FillAppropriateList();
+			_TabControl.Enabled = true;
+		}
+
+		private void FillAppropriateList()
+		{
+			switch (_TabControl.SelectedTab.TabIndex)
+			{
+				case 0:
+					_EmptyFoldersUserControl.SetFolder(_FolderPath.Text);
+					break;
+				case 1:
+					_MoveUpUserControl.SetFolder(_FolderPath.Text);
+
+					break;
+				default:
+					throw new NotImplementedException();
+			}
 		}
 
 		private void _FolderBrowse_Click(object sender, EventArgs e)
@@ -17,9 +48,9 @@ namespace DirectoryTools
 			if (_FolderBrowserDialog.ShowDialog() == DialogResult.OK)
 			{
 				_FolderPath.Text = _FolderBrowserDialog.SelectedPath;
-				UpdateEmptyFoldersUI();
+
 				if (Directory.Exists(_FolderPath.Text))
-					FindFolders();
+					FindAppropriateFolders();
 			}
 		}
 
@@ -41,7 +72,7 @@ namespace DirectoryTools
 				if (Directory.Exists(files[0]))
 				{
 					_FolderPath.Text = files[0];
-					FindFolders();
+					FindAppropriateFolders();
 				}
 			}
 		}
@@ -50,7 +81,7 @@ namespace DirectoryTools
 		private void _FolderPath_KeyUp(object sender, KeyEventArgs e)
 		{
 			if (e.KeyCode == Keys.Enter && Directory.Exists(_FolderPath.Text))
-					FindFolders();
+					FindAppropriateFolders();
 		}
 	}
 }

@@ -30,31 +30,45 @@
 		{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
 			this._StatusStrip = new System.Windows.Forms.StatusStrip();
+			this._ProgressBar = new System.Windows.Forms.ToolStripProgressBar();
+			this._Status = new System.Windows.Forms.ToolStripStatusLabel();
 			this._TabControl = new System.Windows.Forms.TabControl();
 			this._EmptyFoldersTab = new System.Windows.Forms.TabPage();
-			this._EmptyFoldersDeleteToRecycleBin = new System.Windows.Forms.CheckBox();
-			this._EmptyFoldersInvertSelection = new System.Windows.Forms.Button();
-			this._EmptyFoldersSelectAll = new System.Windows.Forms.Button();
-			this._EmptyFoldersListBox = new System.Windows.Forms.CheckedListBox();
-			this._EmptyFoldersDeleteButton = new System.Windows.Forms.Button();
+			this._EmptyFoldersUserControl = new DirectoryTools.EmptyFoldersUserControl();
 			this._MoveUpTab = new System.Windows.Forms.TabPage();
+			this._MoveUpUserControl = new DirectoryTools.MoveUpUserControl();
 			this._FolderPath = new System.Windows.Forms.TextBox();
 			this._FolderBrowseButton = new System.Windows.Forms.Button();
 			this._FolderBrowserDialog = new System.Windows.Forms.FolderBrowserDialog();
 			this._BackgroundWorker = new System.ComponentModel.BackgroundWorker();
 			this._TableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
+			this._StatusStrip.SuspendLayout();
 			this._TabControl.SuspendLayout();
 			this._EmptyFoldersTab.SuspendLayout();
+			this._MoveUpTab.SuspendLayout();
 			this._TableLayoutPanel.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// _StatusStrip
 			// 
+			this._StatusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this._ProgressBar,
+            this._Status});
 			this._StatusStrip.Location = new System.Drawing.Point(0, 353);
 			this._StatusStrip.Name = "_StatusStrip";
 			this._StatusStrip.Size = new System.Drawing.Size(433, 22);
 			this._StatusStrip.TabIndex = 1;
 			this._StatusStrip.Text = "statusStrip1";
+			// 
+			// _ProgressBar
+			// 
+			this._ProgressBar.Name = "_ProgressBar";
+			this._ProgressBar.Size = new System.Drawing.Size(100, 16);
+			// 
+			// _Status
+			// 
+			this._Status.Name = "_Status";
+			this._Status.Size = new System.Drawing.Size(0, 17);
 			// 
 			// _TabControl
 			// 
@@ -72,11 +86,7 @@
 			// 
 			// _EmptyFoldersTab
 			// 
-			this._EmptyFoldersTab.Controls.Add(this._EmptyFoldersDeleteToRecycleBin);
-			this._EmptyFoldersTab.Controls.Add(this._EmptyFoldersInvertSelection);
-			this._EmptyFoldersTab.Controls.Add(this._EmptyFoldersSelectAll);
-			this._EmptyFoldersTab.Controls.Add(this._EmptyFoldersListBox);
-			this._EmptyFoldersTab.Controls.Add(this._EmptyFoldersDeleteButton);
+			this._EmptyFoldersTab.Controls.Add(this._EmptyFoldersUserControl);
 			this._EmptyFoldersTab.Location = new System.Drawing.Point(4, 22);
 			this._EmptyFoldersTab.Name = "_EmptyFoldersTab";
 			this._EmptyFoldersTab.Padding = new System.Windows.Forms.Padding(3);
@@ -85,64 +95,17 @@
 			this._EmptyFoldersTab.Text = "Empty Folders";
 			this._EmptyFoldersTab.UseVisualStyleBackColor = true;
 			// 
-			// _EmptyFoldersDeleteToRecycleBin
+			// _EmptyFoldersUserControl
 			// 
-			this._EmptyFoldersDeleteToRecycleBin.AutoSize = true;
-			this._EmptyFoldersDeleteToRecycleBin.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-			this._EmptyFoldersDeleteToRecycleBin.Location = new System.Drawing.Point(282, 8);
-			this._EmptyFoldersDeleteToRecycleBin.Name = "_EmptyFoldersDeleteToRecycleBin";
-			this._EmptyFoldersDeleteToRecycleBin.Size = new System.Drawing.Size(129, 17);
-			this._EmptyFoldersDeleteToRecycleBin.TabIndex = 6;
-			this._EmptyFoldersDeleteToRecycleBin.Text = "Delete to Recycle Bin";
-			this._EmptyFoldersDeleteToRecycleBin.UseVisualStyleBackColor = true;
-			// 
-			// _EmptyFoldersInvertSelection
-			// 
-			this._EmptyFoldersInvertSelection.Location = new System.Drawing.Point(87, 3);
-			this._EmptyFoldersInvertSelection.Name = "_EmptyFoldersInvertSelection";
-			this._EmptyFoldersInvertSelection.Size = new System.Drawing.Size(75, 23);
-			this._EmptyFoldersInvertSelection.TabIndex = 5;
-			this._EmptyFoldersInvertSelection.Text = "Invert Selection";
-			this._EmptyFoldersInvertSelection.UseVisualStyleBackColor = true;
-			this._EmptyFoldersInvertSelection.Click += new System.EventHandler(this._EmptyFoldersInvertSelection_Click);
-			// 
-			// _EmptyFoldersSelectAll
-			// 
-			this._EmptyFoldersSelectAll.Location = new System.Drawing.Point(6, 3);
-			this._EmptyFoldersSelectAll.Name = "_EmptyFoldersSelectAll";
-			this._EmptyFoldersSelectAll.Size = new System.Drawing.Size(75, 23);
-			this._EmptyFoldersSelectAll.TabIndex = 4;
-			this._EmptyFoldersSelectAll.Text = "Select All";
-			this._EmptyFoldersSelectAll.UseVisualStyleBackColor = true;
-			this._EmptyFoldersSelectAll.Click += new System.EventHandler(this._EmptyFoldersSelectAll_Click);
-			// 
-			// _EmptyFoldersListBox
-			// 
-			this._EmptyFoldersListBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this._EmptyFoldersListBox.CheckOnClick = true;
-			this._EmptyFoldersListBox.FormattingEnabled = true;
-			this._EmptyFoldersListBox.Location = new System.Drawing.Point(6, 40);
-			this._EmptyFoldersListBox.Name = "_EmptyFoldersListBox";
-			this._EmptyFoldersListBox.Size = new System.Drawing.Size(318, 244);
-			this._EmptyFoldersListBox.Sorted = true;
-			this._EmptyFoldersListBox.TabIndex = 3;
-			this._EmptyFoldersListBox.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this._EmptyFoldersListBox_ItemCheck);
-			// 
-			// _EmptyFoldersDeleteButton
-			// 
-			this._EmptyFoldersDeleteButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this._EmptyFoldersDeleteButton.Location = new System.Drawing.Point(338, 40);
-			this._EmptyFoldersDeleteButton.Name = "_EmptyFoldersDeleteButton";
-			this._EmptyFoldersDeleteButton.Size = new System.Drawing.Size(75, 23);
-			this._EmptyFoldersDeleteButton.TabIndex = 2;
-			this._EmptyFoldersDeleteButton.Text = "Delete";
-			this._EmptyFoldersDeleteButton.UseVisualStyleBackColor = true;
-			this._EmptyFoldersDeleteButton.Click += new System.EventHandler(this._EmptyFoldersDeleteButton_Click);
+			this._EmptyFoldersUserControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._EmptyFoldersUserControl.Location = new System.Drawing.Point(3, 3);
+			this._EmptyFoldersUserControl.Name = "_EmptyFoldersUserControl";
+			this._EmptyFoldersUserControl.Size = new System.Drawing.Size(413, 286);
+			this._EmptyFoldersUserControl.TabIndex = 8;
 			// 
 			// _MoveUpTab
 			// 
+			this._MoveUpTab.Controls.Add(this._MoveUpUserControl);
 			this._MoveUpTab.Location = new System.Drawing.Point(4, 22);
 			this._MoveUpTab.Name = "_MoveUpTab";
 			this._MoveUpTab.Padding = new System.Windows.Forms.Padding(3);
@@ -151,11 +114,19 @@
 			this._MoveUpTab.Text = "Move Up";
 			this._MoveUpTab.UseVisualStyleBackColor = true;
 			// 
+			// _MoveUpUserControl
+			// 
+			this._MoveUpUserControl.Dock = System.Windows.Forms.DockStyle.Fill;
+			this._MoveUpUserControl.Location = new System.Drawing.Point(3, 3);
+			this._MoveUpUserControl.Name = "_MoveUpUserControl";
+			this._MoveUpUserControl.Size = new System.Drawing.Size(413, 286);
+			this._MoveUpUserControl.TabIndex = 11;
+			// 
 			// _FolderPath
 			// 
 			this._FolderPath.AllowDrop = true;
-			this._FolderPath.Dock = System.Windows.Forms.DockStyle.Fill;
-			this._FolderPath.Location = new System.Drawing.Point(3, 327);
+			this._FolderPath.Anchor = System.Windows.Forms.AnchorStyles.Left;
+			this._FolderPath.Location = new System.Drawing.Point(3, 328);
 			this._FolderPath.Name = "_FolderPath";
 			this._FolderPath.Size = new System.Drawing.Size(343, 20);
 			this._FolderPath.TabIndex = 3;
@@ -179,6 +150,10 @@
 			// 
 			this._FolderBrowserDialog.RootFolder = System.Environment.SpecialFolder.MyComputer;
 			this._FolderBrowserDialog.ShowNewFolderButton = false;
+			// 
+			// _BackgroundWorker
+			// 
+			this._BackgroundWorker.WorkerReportsProgress = true;
 			// 
 			// _TableLayoutPanel
 			// 
@@ -207,9 +182,11 @@
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "Form1";
 			this.Text = "Directory Tools";
+			this._StatusStrip.ResumeLayout(false);
+			this._StatusStrip.PerformLayout();
 			this._TabControl.ResumeLayout(false);
 			this._EmptyFoldersTab.ResumeLayout(false);
-			this._EmptyFoldersTab.PerformLayout();
+			this._MoveUpTab.ResumeLayout(false);
 			this._TableLayoutPanel.ResumeLayout(false);
 			this._TableLayoutPanel.PerformLayout();
 			this.ResumeLayout(false);
@@ -228,11 +205,10 @@
 		private System.Windows.Forms.FolderBrowserDialog _FolderBrowserDialog;
 		private System.ComponentModel.BackgroundWorker _BackgroundWorker;
 		private System.Windows.Forms.TableLayoutPanel _TableLayoutPanel;
-		private System.Windows.Forms.Button _EmptyFoldersDeleteButton;
-		private System.Windows.Forms.CheckedListBox _EmptyFoldersListBox;
-		private System.Windows.Forms.Button _EmptyFoldersInvertSelection;
-		private System.Windows.Forms.Button _EmptyFoldersSelectAll;
-		private System.Windows.Forms.CheckBox _EmptyFoldersDeleteToRecycleBin;
+		private MoveUpUserControl _MoveUpUserControl;
+		private EmptyFoldersUserControl _EmptyFoldersUserControl;
+		private System.Windows.Forms.ToolStripProgressBar _ProgressBar;
+		private System.Windows.Forms.ToolStripStatusLabel _Status;
 	}
 }
 
